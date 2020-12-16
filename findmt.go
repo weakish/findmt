@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/weakish/gosugar"
 	"mime"
@@ -32,7 +33,13 @@ func findmt(mimeTypePattern string) {
 		} else if f.Mode().IsRegular() {
 			if matchesMimeType(f, mimeTypePattern) {
 				parent := path.Dir(filePath)
-				fmt.Println("\"" + parent + "\"")
+				jsonBytes, err := json.Marshal(parent)
+				if err == nil {
+					fmt.Println(string(jsonBytes))
+				} else {
+					_, _ = fmt.Fprintf(os.Stderr, "failed to encode `%v` as json", err)
+				}
+
 				return filepath.SkipDir
 			} else {
 				return nil
