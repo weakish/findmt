@@ -81,6 +81,9 @@ func main() {
 		pattern := os.Args[1]
 		if pattern == "-h" || pattern == "--help" || pattern == "help" {
 			_, _ = os.Stderr.WriteString(usage)
+		} else if pattern == "--version" || pattern == "version" {
+			const version = "0.1.0"
+			fmt.Printf("findmt %s\n", version)
 		} else if strings.Contains(pattern, "/") {
 			findmt(pattern)
 		} else {
