@@ -15,12 +15,31 @@ func matchesMimeType(f os.FileInfo, mimeTypePattern string) bool {
 	ext := filepath.Ext(f.Name())
 	mimeType := mime.TypeByExtension(ext)
 
-	mimeTypePrefix := strings.TrimSuffix(mimeTypePattern, "*")
-	if strings.HasPrefix(mimeType, mimeTypePrefix) {
-		return true
-	} else {
-		return false
+	patterns := strings.Split(mimeTypePattern, ",")
+	var includes []string
+	var excludes []string
+	for _, pattern := range patterns {
+		pattern = strings.TrimSuffix(pattern, "*")
+		if strings.HasPrefix(pattern, "-") {
+			excludes = append(excludes, strings.TrimPrefix(pattern, "-"))
+		} else {
+			includes = append(includes, pattern)
+		}
 	}
+
+	for _, exclude := range excludes {
+		if strings.HasPrefix(mimeType, exclude) {
+			return false
+		}
+	}
+
+	for _, include := range includes {
+		if strings.HasPrefix(mimeType, include) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func findmt(mimeTypePattern string) {
@@ -53,7 +72,7 @@ func findmt(mimeTypePattern string) {
 }
 
 func main() {
-	const usage = "findmt [pattern]\n\nExample: findmt 'image/*'\n"
+	const usage = "findmt [pattern]\n\nExample: findmt 'image/*,-image/vnd.djvu'\n"
 	switch len(os.Args) {
 	case 1:
 		_, _ = os.Stderr.WriteString(usage)
