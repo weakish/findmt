@@ -29,5 +29,5 @@ jobs:
       - name: Run main
         run: |
           go build
-          ./findmt -h | grep -q -F 'findmt [pattern]'
+          ./findmt -h
           ./findmt 'image/*'
